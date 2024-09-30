@@ -1,0 +1,100 @@
+---
+version: 2
+
+plan:
+  project-key: "PROJ"
+  key: "PIPELINE"
+  name: "Pipeline Aplicação"
+
+stages:
+  - Build
+  - QA
+  - Delivery
+  - Deploy_Application
+  - Deploy_Monitoring
+  - Promotion
+
+# Fase de Build
+jobs:
+  - name: Build
+    key: BUILD
+    tasks:
+      - checkout: "default" # Faz o checkout do código
+      - script:
+          interpreter: BINSH_OR_CMDEXE
+          scripts:
+            - echo "Instalando dependências..."
+            - mvn clean install # Exemplo de build com Maven
+      - artifact:
+          name: Build Artifact
+          copyPattern: "**/target/*.jar"
+          shared: true
+
+# Fase de QA
+  - name: QA
+    key: QA
+    tasks:
+      - script:
+          interpreter: BINSH_OR_CMDEXE
+          scripts:
+            - echo "Executando testes unitários..."
+            - mvn test # Executa os testes
+            - echo "Executando análise de cobertura..."
+            - mvn cobertura:cobertura # Gera relatório de cobertura
+
+# Fase de Delivery
+  - name: Delivery
+    key: DELIVERY
+    tasks:
+      - script:
+          interpreter: BINSH_OR_CMDEXE
+          scripts:
+            - echo "Empacotando aplicação para deploy..."
+            - mvn package -DskipTests
+      - artifact:
+          name: Package Artifact
+          copyPattern: "**/target/*.jar"
+          shared: true
+
+# Fase de Deploy da Aplicação
+  - name: Deploy Application
+    key: DEPLOY_APP
+    tasks:
+      - script:
+          interpreter: BINSH_OR_CMDEXE
+          scripts:
+            - echo "Realizando o deploy da aplicação..."
+            - scp target/*.jar user@server:/path/to/deploy
+            - ssh user@server 'cd /path/to/deploy && java -jar application.jar'
+
+# Fase de Deploy do Monitoramento
+  - name: Deploy Monitoring
+    key: DEPLOY_MON
+    tasks:
+      - script:
+          interpreter: BINSH_OR_CMDEXE
+          scripts:
+            - echo "Instalando ferramentas de monitoramento..."
+            - ssh user@server 'sudo apt-get install monitoring-tool'
+            - echo "Configurando monitoramento para a aplicação..."
+            - ssh user@server 'monitoring-tool --config /path/to/config'
+
+# Fase de Promoção de Branch
+  - name: Promotion
+    key: PROMOTION
+    tasks:
+      - script:
+          interpreter: BINSH_OR_CMDEXE
+          scripts:
+            - echo "Promovendo branch após testes bem-sucedidos..."
+            - git checkout master
+            - git merge develop
+            - git push origin master
+
+# Configurações de notificações (opcional)
+notifications:
+  - committers:
+      recipient: committers
+      when:
+        failed: true
+        successful: false
