@@ -1,0 +1,22 @@
+name: "devsecops-crud-frontend"
+version: "0.0.0"
+validations:
+  enabled: true
+buildTests:
+  enabled: false
+qa:
+  enabled: false
+build:
+  enabled: false
+delivery:
+  enabled: false
+deploy:
+  enabled: false
+deployTests:
+  enabled: false
+monitoring:
+  enabled: false
+observability:
+  enabled: false
+feedback:
+  enabled: false

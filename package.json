@@ -4,7 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:stage": "ng serve",
+    "start:dev": "ng serve",
     "build": "ng build",
+    "build:stage": "ng build",
+    "build:dev": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:devsecops-crud-frontend": "node dist/devsecops-crud-frontend/server/server.mjs"
