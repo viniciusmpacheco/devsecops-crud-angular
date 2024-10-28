@@ -1,10 +1,11 @@
 name: "devsecops-crud-frontend"
 version: "0.0.0"
-validations:
+environment: "dev"
+validation:
   enabled: true
 buildTests:
   enabled: false
-qa:
+qualityAssurance:
   enabled: false
 build:
   enabled: false
